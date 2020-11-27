@@ -6,7 +6,7 @@
 /*   By: sabrenda <sabrenda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/25 18:24:46 by sabrenda          #+#    #+#             */
-/*   Updated: 2020/11/25 23:39:49 by sabrenda         ###   ########.fr       */
+/*   Updated: 2020/11/27 05:01:27 by sabrenda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,23 +17,31 @@ int		get_next_line(int fd, char **line)
 {
 	unsigned int	n;
 	unsigned int	last;
-	char			*buffer;
+	char			buffer[BUFFER_SIZE + 1];
 
 	n = 0;
 	m = 0;
 	last = 0;
 	while(1)
 	{
-	if (!(buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char))))
-		return (-1);
-	last = read(fd, buffer, BUFFER_SIZE);
-	buffer[last] = '\0';
+		if ((last = read(fd, buffer, BUFFER_SIZE)) < BUFFER_SIZE && last >= 0)
+		{
+			buffer[last] = '\0';
+			line = buffer;
+			return (0);
+		}
+		else if (last[BUFFER_SIZE] == '\n')
+		{
+			buffer[last] = '\0';
+			return (1);
+		}
+		else if (last < 0)
+			return (-1);
+		n++;
 	}
-
 }
 char	*ft_realloc(char *src, size_t buf)
 {
-
 	return (src);
 }
 int		read_from_fd(int fd)
