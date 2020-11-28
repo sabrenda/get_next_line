@@ -6,54 +6,41 @@
 /*   By: sabrenda <sabrenda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/25 18:24:46 by sabrenda          #+#    #+#             */
-/*   Updated: 2020/11/27 05:01:27 by sabrenda         ###   ########.fr       */
+/*   Updated: 2020/11/28 05:46:31 by sabrenda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <fcntl.h>
 
 int		get_next_line(int fd, char **line)
 {
-	unsigned int	n;
-	unsigned int	last;
+	int				read_file;
 	char			buffer[BUFFER_SIZE + 1];
+	char			*point_n;
+	static char		*global;
+	int 			flag;
 
-	n = 0;
-	m = 0;
-	last = 0;
-	while(1)
+	flag = 1;
+	if (global)
+		*line = ft_strdup(global);
+	else
+		*line = ft_strdup("");
+	while(flag && (read_file = read(fd, buffer, BUFFER_SIZE)) && read_file > 0)
 	{
-		if ((last = read(fd, buffer, BUFFER_SIZE)) < BUFFER_SIZE && last >= 0)
+		buffer[BUFFER_SIZE] = '\0';
+		if (point_n = ft_strchr(buffer,'\n'))
 		{
-			buffer[last] = '\0';
-			line = buffer;
-			return (0);
+			flag = 0;
+			*point_n = '\0';
+			point_n++;
+			*global = ft_strdup(point_n);
 		}
-		else if (last[BUFFER_SIZE] == '\n')
-		{
-			buffer[last] = '\0';
-			return (1);
-		}
-		else if (last < 0)
-			return (-1);
-		n++;
+		*line = ft_strjoin(*line, buffer);
 	}
-}
-char	*ft_realloc(char *src, size_t buf)
-{
-	return (src);
-}
-int		read_from_fd(int fd)
-{
-	char	*buf;
-	int		rs;
-
-	rs = 0;
-	if (!(buf = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char))))
+	if (read_file < 0)
 		return (-1);
-	rs = read(fd, buf, BUFFER_SIZE);
-	buf[rs] = '\0';
+	if (!flag)
+		return (1);
 	return (0);
 }
 
