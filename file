@@ -1,1 +1,7 @@
-1234567
+1Pour rendre des bonus, vous devez inclure une règle bonus à votre Makefile qui
+2ajoutera les divers headers, librairies ou fonctions qui ne sont pas autorisées dans la
+3partie principale du projet. Les bonus doivent être dans une fichier _bonus.{c/h}.
+4L’évaluation de la partie obligatoire et de la partie bonus sont faites séparément.
+5• Si le projet autorise votre libft, vous devez copier ses sources et son Makefile
+6associé dans un dossier libft contenu à la racine. Le Makefile de votre projet doit
+7compiler la librairie à l’aide de son Makefile, puis compiler le projet.
