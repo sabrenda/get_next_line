@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sabrenda <sabrenda@student.42.fr>          +#+  +:+       +#+        */
+/*   By: Ahmed <Ahmed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/25 17:39:00 by sabrenda          #+#    #+#             */
-/*   Updated: 2020/11/29 09:43:43 by sabrenda         ###   ########.fr       */
+/*   Updated: 2020/12/05 13:18:54 by Ahmed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ char	*ft_strjoin(char *s1, char *s2)
 		str[i] = s1[i];
 		i++;
 	}
-	free(s1);
+	free (s1);
 	while (s2[j])
 	{
 		str[i] = s2[j];
@@ -64,6 +64,8 @@ char	*ft_strchr(const char *s, int c)
 	size_t	i;
 
 	i = 0;
+	if (!s)
+		return (NULL);
 	if (c == '\0')
 	{
 		while (s[i])
@@ -87,4 +89,16 @@ size_t	ft_strlen(const char *str)
 	while (str[j] != '\0')
 		j++;
 	return (j);
+}
+
+void	ft_bzero(char *s, size_t n)
+{
+	size_t			i;
+
+	i = 0;
+	while (i < n)
+	{
+		s[i] = '\0';
+		i++;
+	}
 }
