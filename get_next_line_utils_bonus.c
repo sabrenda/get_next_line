@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sabrenda <sabrenda@student.21-school.ru    +#+  +:+       +#+        */
+/*   By: sabrenda <sabrenda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/12/05 14:47:23 by sabrenda          #+#    #+#             */
-/*   Updated: 2020/12/05 14:49:50 by sabrenda         ###   ########.fr       */
+/*   Created: 2020/11/25 17:39:00 by sabrenda          #+#    #+#             */
+/*   Updated: 2020/12/16 00:34:55 by sabrenda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,23 @@
 
 char	*ft_strjoin(char *s1, char *s2)
 {
-	int			i;
-	int			j;
-	char		*str;
+	int		i;
+	int		j;
+	char	*str;
 
-	if (!s1 || !s2)
-		return (NULL);
-	str = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
-	if (str == NULL)
+	i = ft_strlen(s1) + ft_strlen(s2) + 1;
+	if (!(str = (char*)malloc(sizeof(char) * i)))
 		return (NULL);
 	i = 0;
 	j = 0;
-	while (s1[i])
-	{
-		str[i] = s1[i];
-		i++;
-	}
+	if (s1)
+		while (s1[j])
+			str[i++] = s1[j++];
+	j = 0;
 	free(s1);
-	while (s2[j])
-	{
-		str[i] = s2[j];
-		j++;
-		i++;
-	}
+	if (s2)
+		while (s2[j])
+			str[i++] = s2[j++];
 	str[i] = '\0';
 	return (str);
 }
