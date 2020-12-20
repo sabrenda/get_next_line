@@ -1,25 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrenda <sabrenda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 18:59:46 by sabrenda          #+#    #+#             */
-/*   Updated: 2020/12/16 00:34:25 by sabrenda         ###   ########.fr       */
+/*   Updated: 2020/12/20 00:57:25 by sabrenda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
-char	*ft_rasengan(char **s_line)
+char	*ft_linestart_or_tail(char **buf_line)
 {
 	char	*str;
 
-	if (*s_line)
+	if (*buf_line)
 	{
-		str = ft_strdup(*s_line);
-		ft_bzero(*s_line, ft_strlen(*s_line));
+		str = ft_strdup(*buf_line);
+		free(*buf_line);
+		*buf_line = NULL;
 		return (str);
 	}
 	else
@@ -27,75 +28,101 @@ char	*ft_rasengan(char **s_line)
 	return (str);
 }
 
-char	*ft_chidori(char *point_n, char **s_line)
+char	*ft_point_change(char *point_n, char **buf_line)
 {
-	if (*s_line)
-		free(*s_line);
+	if (*buf_line)
+	{
+		free(*buf_line);
+		*buf_line = NULL;
+	}
 	*point_n = '\0';
 	point_n++;
 	return (ft_strdup(point_n));
 }
 
-int		ft_get_line(int fd, char **line, char **s_line)
+int		ft_get_line(int fd, char **line, char **buf_line)
 {
 	char			buf[BUFFER_SIZE + 1];
-	char			*point_n;
-	int				read_f;
+	char			*p_n;
+	int				r_fd;
 
-	read_f = 0;
-	if (!(*line = ft_rasengan(s_line)))
+	p_n = NULL;
+	r_fd = 0;
+	if (!(*line = ft_linestart_or_tail(buf_line)))
 		return (-1);
-	if ((point_n = ft_strchr(*line, '\n')))
-		if (!(*s_line = ft_chidori(point_n, s_line)))
+	if ((p_n = ft_strchr(*line, '\n')))
+		if (!(*buf_line = ft_point_change(p_n, buf_line)))
 			return (-1);
-	ft_bzero(buf, BUFFER_SIZE + 1);
-	while (!point_n && (read_f = read(fd, buf, BUFFER_SIZE)) && read_f > 0)
+	while (!p_n && (r_fd = read(fd, buf, BUFFER_SIZE)) && r_fd > 0)
 	{
-		if ((point_n = ft_strchr(buf, '\n')))
-			if (!(*s_line = ft_chidori(point_n, s_line)))
+		buf[r_fd] = '\0';
+		if ((p_n = ft_strchr(buf, '\n')))
+			if (!(*buf_line = ft_point_change(p_n, buf_line)))
 				return (-1);
-		if (!(*line = ft_strjoin(*line, buf)) || read_f < 0)
+		if (!(*line = ft_strjoin(*line, buf)) || r_fd < 0)
 			return (-1);
-		ft_bzero(buf, BUFFER_SIZE + 1);
 	}
-	if (!point_n && (read_f == 0 || (read_f < BUFFER_SIZE && read_f >= 0)))
+	if (!p_n && (r_fd == 0 || (r_fd < BUFFER_SIZE && r_fd >= 0)))
 		return (0);
-	else if (read_f < 0)
+	if (r_fd == -1)
 		return (-1);
 	return (1);
-}
-
-t_gnl	*new_list(int fd)
-{
-	t_gnl	*new;
-
-	if (!(new = (t_gnl *)malloc(sizeof(t_gnl))))
-		return (NULL);
-	new->fd = fd;
-	new->s_line = NULL;
-	new->next = NULL;
-	return (new);
 }
 
 int		get_next_line(int fd, char **line)
 {
 	static t_gnl	*head;
 	t_gnl			*tmp;
+	t_gnl			*before;
 	int				x;
 
-	if (fd < 0 || line == 0)
+	before = NULL;
+	if (fd < 0 || !line || BUFFER_SIZE < 1)
 		return (-1);
-	if (!head)
-		if (!(head = new_list(fd)))
-			return (-1);
+	if (!head && !(head = nw_lst(fd)))
+		return (-1);
 	tmp = head;
 	while (tmp->fd != fd)
 	{
 		if (tmp->next == NULL)
-			if (!(tmp->next = new_list(fd)))
+			if (!(tmp->next = nw_lst(fd)))
 				return (-1);
+		before = tmp;
 		tmp = tmp->next;
 	}
-	x = ft_get_line(tmp->fd, line, &tmp->s_line);
+	if (!(x = ft_get_line(tmp->fd, line, &tmp->buf_line)) || x == -1)
+	{
+		if (!(ft_clean(&head, tmp, before)))
+			head = NULL;
+	}
 	return (x);
+}
+
+int		ft_clean(t_gnl **head, t_gnl *tmp, t_gnl *before)
+{
+	if (tmp->buf_line)
+	{
+		free(tmp->buf_line);
+		tmp->buf_line = NULL;
+	}
+	if (!before)
+	{
+		if (tmp->next == NULL)
+		{
+			free(tmp);
+			return (0);
+		}
+		*head = tmp->next;
+		free(tmp);
+		return (1);
+	}
+	if (tmp->next == NULL)
+	{
+		before->next = NULL;
+		free(tmp);
+		return (1);
+	}
+	before->next = tmp->next;
+	free(tmp);
+	return (1);
 }

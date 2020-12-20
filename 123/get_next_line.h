@@ -6,7 +6,7 @@
 /*   By: sabrenda <sabrenda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 18:50:50 by sabrenda          #+#    #+#             */
-/*   Updated: 2020/12/20 01:00:35 by sabrenda         ###   ########.fr       */
+/*   Updated: 2020/12/19 20:18:02 by sabrenda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ typedef struct		s_gnl
 	char			*buf_line;
 	struct s_gnl	*next;
 }					t_gnl;
-
 int					get_next_line(int fd, char **line);
 int					ft_get_line(int fd, char **line, char **buf_line);
 char				*ft_strjoin(char *s1, char *s2);
